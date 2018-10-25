@@ -1,0 +1,8 @@
+﻿  Plane.h
+c:\users\haubold\source\repos\opengl\opengl\point3f.h(33): warning C4244: "return": Konvertierung von "double" in "float", möglicher Datenverlust
+  Code wird generiert...
+  Überspringen... (keine relevanten Änderungen gefunden)
+  main.cpp
+  TraceUtils.cpp
+  Plane.cpp
+  openGL.vcxproj -> C:\Users\Haubold\source\repos\openGL\Debug\openGL.exe
