@@ -36,6 +36,9 @@
     <ClCompile Include="Plane.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Traingle.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Point3f.h">
@@ -51,6 +54,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Ray.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Triangle.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

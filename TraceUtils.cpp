@@ -51,7 +51,8 @@ Point3f TraceUtils::traceSpheres(const Ray ray, const std::vector<Sphere> &spher
 		bool inside = false;
 		if (ray.getDirection().dot(normalAtIntersection) > 0)
 		{
-			normalAtIntersection = normalAtIntersection.getMultipliedWith(-1);
+			float r = -1.0;
+			normalAtIntersection = normalAtIntersection.getMultipliedWith(r);
 			inside = true;
 		}
 		if ((nearestSphere->getTransparency() > 0 || nearestSphere->getReflection() > 0) && depth < Constants::MAX_RAY_DEPTH) {
@@ -102,6 +103,99 @@ Point3f TraceUtils::traceSpheres(const Ray ray, const std::vector<Sphere> &spher
 		}
 		return surfaceColor;// +sphere->emissionColor;
 }
+
+
+
+Point3f TraceUtils::traceTriangles(const Ray ray, const std::vector<Triangle>& triangles, const int &depth)
+{
+	//if (raydir.length() != 1) std::cerr << "Error " << raydir << std::endl;
+	float tnear = Constants::INFINIT;//to find nearest sphere
+	const Triangle* nearestTriangle = nullptr;
+	// find intersection of this ray with the sphere in the scene
+
+	float u, v;
+	for (Triangle triangle : triangles) {
+
+		float t0 = Constants::INFINIT, t1 = Constants::INFINIT;
+		if (triangle.rayTriangleIntersect(ray, t0,u,v)) {
+			if (t0 < 0) t0 = t1;
+			if (t0 < tnear) {
+				tnear = t0;
+				nearestTriangle = &triangle;
+			}
+		}
+	}
+	// if there's no intersection return black or background color
+	if (!nearestTriangle)
+	{
+		return Constants::BACK_GROUND_COLOR;
+	}
+
+	Point3f surfaceColor = 0; // color of the ray/surfaceof the object intersected by the ray
+	Point3f pointOfIntersection = ray.getOrigin() + ray.getDirection() * tnear; // point of intersection
+	Point3f normalAtIntersection =  nearestTriangle->getNormal(); // normal at the intersection point
+	normalAtIntersection.normalize(); 
+   //float bias = 1e-4; // add some bias to the point from which we will be tracing
+	float bias = 0.0;
+	bool inside = false;
+	if (ray.getDirection().dot(normalAtIntersection) > 0)
+	{
+		float r = -1.0;
+		normalAtIntersection = normalAtIntersection.getMultipliedWith(r);
+	}
+	if ((nearestTriangle->getTransparency() > 0 || nearestTriangle->getReflection() > 0) && depth < Constants::MAX_RAY_DEPTH) {
+		//float facingratio = -ray.getDirection().dot(nhit);
+		// change the mix value to tweak the effect
+		float fresneleffect = getFresnelEffect(ray, normalAtIntersection, 0.1);
+		// compute reflection direction (not need to normalize because all vectors
+		// are already normalized)
+		Point3f directionOfReflection = getDirectionOfReflection(ray, normalAtIntersection);
+		Point3f reflection = traceTriangles(Ray(pointOfIntersection + normalAtIntersection * bias, directionOfReflection), triangles, depth + 1);
+
+		Point3f refraction = 0;
+		// if the sphere is also transparent compute refraction ray (transmission)
+		if (nearestTriangle->getTransparency()) {
+			float ior = 1.1, eta =  ior; // are we inside or outside the surface?
+			float cosi = -normalAtIntersection.dot(ray.getDirection());
+			float k = 1 - eta * eta * (1 - cosi * cosi);
+			Point3f refrdir = ray.getDirection() * eta + normalAtIntersection * (eta * cosi - sqrt(k));
+			refrdir.normalize();
+			refraction = traceTriangles(Ray(pointOfIntersection - normalAtIntersection * bias, refrdir), triangles, depth + 1);
+		}
+		// the result is a mix of reflection and refraction (if the sphere is transparent)
+		surfaceColor = (
+			reflection * fresneleffect +
+			refraction * (1 - fresneleffect) * nearestTriangle->getTransparency()) * nearestTriangle->getSurfaceColor();
+	}
+	else {
+		//it's a diffuse object, no need to raytrace any further
+		for (unsigned i = 0; i < triangles.size(); ++i) {
+			if (triangles[i].getEmissionColor().m_X > 0) {
+				// this is a light
+				Point3f transmission = 1;
+				Point3f lightDirection = triangles[i].getCenter() - pointOfIntersection;
+				lightDirection.normalize();
+				for (unsigned j = 0; j < triangles.size(); ++j) {
+					if (i != j) {
+						float t0, t1;
+
+						Triangle triangle = triangles[j];
+						if (triangle.rayTriangleIntersect(Ray(pointOfIntersection + normalAtIntersection * bias, lightDirection), t0, u, v)) {
+							transmission = 0;
+							break;
+						}
+					}
+				}
+				surfaceColor += nearestTriangle->getSurfaceColor() * transmission *
+					std::max(float(0), normalAtIntersection.dot(lightDirection)) * triangles[i].getEmissionColor();
+			}
+		}
+	}
+	return surfaceColor;// +sphere->emissionColor;
+}
+
+
+
 
 Point3f TraceUtils::tracePlanes(const Ray ray, const std::vector<Plane> & planes, const int & depth)
 {
@@ -159,6 +253,32 @@ Point3f * TraceUtils::render(const std::vector<Sphere> &spheres, const unsigned 
 			Point3f raydir(x_Dir, y_Dir, -1);
 			raydir.normalize();
 			*pixel = traceSpheres(Ray(Point3f(0), raydir), spheres, 0);
+		}
+	}
+
+	return image;
+}
+
+
+
+
+Point3f * TraceUtils::render(const std::vector<Triangle> &triangles, const unsigned int & width, const unsigned int & height)
+{
+	Point3f* image = new Point3f[width * height];
+	Point3f*pixel = image;
+	float invWidth = 1 / float(width), invHeight = 1 / float(height);
+	float fov = 30, aspectratio = width / float(height);
+	float angle = tan(Constants::M_PI * 0.5 * fov / 180.);
+
+	// Trace rays
+	for (unsigned y = 0; y < height; ++y) {
+		for (unsigned x = 0; x < width; ++x, ++pixel) {
+
+			float x_Dir = (2 * ((x + 0.5) * invWidth) - 1) * angle * aspectratio;
+			float y_Dir = (1 - 2 * ((y + 0.5) * invHeight)) * angle;
+			Point3f raydir(x_Dir, y_Dir, -1);
+			raydir.normalize();
+			*pixel = traceTriangles(Ray(Point3f(0), raydir), triangles, 0);
 		}
 	}
 

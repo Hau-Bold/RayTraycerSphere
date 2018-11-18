@@ -127,6 +127,7 @@
     <ClCompile Include="Point3f.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="TraceUtils.cpp" />
+    <ClCompile Include="Traingle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h" />
@@ -134,6 +135,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="TraceUtils.h" />
+    <ClInclude Include="Triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

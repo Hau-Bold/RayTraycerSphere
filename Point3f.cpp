@@ -11,11 +11,20 @@ Point3f Point3f::normalize()
 	return *this;
 }
 
-Point3f Point3f::getMultipliedWith(const float & f)
+Point3f Point3f::cross(Point3f & other)
 {
-	m_X *= f;
-	m_Y *= f;
-	m_Z *= f;
+	float u = m_Y * other.m_Z + m_Z * other.m_Y;
+	float v = m_Z * other.m_X + m_X * other.m_Z;
+	float w = m_X * other.m_Y + m_Y * other.m_X;
 
-	return *this;
+	return Point3f(u, v, w);
+}
+
+Point3f Point3f::getMultipliedWith(float & f)
+{
+	float x=m_X * f;
+	float y=m_Y * f;
+	float z=m_Z * f;
+
+	return Point3f(x,y,z);
 }

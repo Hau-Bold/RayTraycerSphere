@@ -19,7 +19,9 @@ public:
 
 	Point3f normalize();
 
-	Point3f getMultipliedWith(const float & f);
+	Point3f cross(Point3f & other);
+
+	Point3f getMultipliedWith(float & f);
 	
 
 	Point3f operator * (const Point3f &other) const { return Point3f(m_X * other.m_X, m_Y * other.m_Y, m_Z * other.m_Z); }

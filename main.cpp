@@ -13,6 +13,7 @@
 #include "Point3f.h"
 #include "Sphere.h"
 #include "TraceUtils.h"
+#include "Triangle.h"
 
 const unsigned int W = 300;
 const unsigned int H = 300;
@@ -22,7 +23,7 @@ int main(int argc, char **argv)
 	//srand48(13);
 	std::vector<Sphere> spheres;
 	// position, radius, surface color, reflectivity, transparency, emission color
-	//spheres.push_back(Sphere(Point3f(0.0, -10004, -20), 1000, Point3f(0.20, 0.20, 0.20), 0, 0.0));
+	spheres.push_back(Sphere(Point3f(0.0, -10004, -20), 1000, Point3f(0.20, 0.20, 0.20), 0, 0.0));
 	spheres.push_back(Sphere(Point3f(0.0, 0, -20), 4, Point3f(1.00, 0.32, 0.36), 0.0, 0.1));
 	/*spheres.push_back(Sphere(Point3f(5.0, -1, -15), 2, Point3f(0.90, 0.76, 0.46), 1, 0.0));
 	spheres.push_back(Sphere(Point3f(5.0, 0, -25), 3, Point3f(0.65, 0.77, 0.97), 1, 0.0));
@@ -32,6 +33,11 @@ int main(int argc, char **argv)
 	
 	Point3f* image =TraceUtils::render(spheres,W,H);
 	TraceUtils::paintImage(image, W, H);
+
+	/*std::vector<Triangle> triangles;
+	triangles.emplace_back(Triangle(Point3f(0.0, 0.0, -20), Point3f(1.0, 0.0, -20), Point3f(0.0, 1.0, -20), Point3f(1.00, 0.32, 0.36), 0.8, 0.1, Point3f(0)));
+	Point3f* image =TraceUtils::render(triangles,W,H);
+	TraceUtils::paintImage(image, W, H);*/
 }
 
 

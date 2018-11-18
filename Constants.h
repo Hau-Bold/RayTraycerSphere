@@ -17,6 +17,8 @@ public:
 
 	static const int MAX_RAY_DEPTH;
 
+	static const float EPSILON;
+
 };
 
 #endif
