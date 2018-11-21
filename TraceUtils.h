@@ -5,6 +5,7 @@
 #include "Constants.h"
 #include "Point3f.h"
 
+#include "Cone.h"
 #include "Sphere.h"
 #include "Plane.h"
 
@@ -25,6 +26,8 @@ public:
 
 	static Point3f traceSpheres(const Ray ray, const std::vector<Sphere>& spheres, const int &depth);
 
+	static Point3f traceCones(const Ray ray, const std::vector<Cone>& cones, const int &depth);
+
 	static Point3f traceTriangles(const Ray ray, const std::vector<Triangle>& triangles, const int &depth);
 
 	static Point3f tracePlanes(const Ray ray, const std::vector<Plane> &planes, const int &depth);
@@ -32,6 +35,8 @@ public:
 	static void paintImage(const Point3f * image, const unsigned int & width, const unsigned int & height);
 
 	static Point3f * render(const std::vector<Sphere> &spheres, const unsigned int & width, const unsigned int & height);
+
+	static Point3f * render(const std::vector<Cone> &cones, const unsigned int & width, const unsigned int & height);
 	
 	static Point3f * render(const std::vector<Triangle> &triangle, const unsigned int & width, const unsigned int & height);
 

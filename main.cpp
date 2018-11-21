@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include "Point3f.h"
 #include "Sphere.h"
+#include "Cone.h"
 #include "TraceUtils.h"
 #include "Triangle.h"
 
@@ -21,23 +22,43 @@ const unsigned int H = 300;
 int main(int argc, char **argv)
 {
 	//srand48(13);
-	std::vector<Sphere> spheres;
+	//std::vector<Sphere> spheres;
 	// position, radius, surface color, reflectivity, transparency, emission color
-	spheres.push_back(Sphere(Point3f(0.0, -10004, -20), 1000, Point3f(0.20, 0.20, 0.20), 0, 0.0));
-	spheres.push_back(Sphere(Point3f(0.0, 0, -20), 4, Point3f(1.00, 0.32, 0.36), 0.0, 0.1));
+	//spheres.push_back(Sphere(Point3f(0.0, -10004, -20), 1000, Point3f(0.20, 0.20, 0.20), 0, 0.0));
+	//spheres.push_back(Sphere(Point3f(0.0, 0, -20), 4, Point3f(1.00, 0.32, 0.36), 0.0, 0.1));
 	/*spheres.push_back(Sphere(Point3f(5.0, -1, -15), 2, Point3f(0.90, 0.76, 0.46), 1, 0.0));
 	spheres.push_back(Sphere(Point3f(5.0, 0, -25), 3, Point3f(0.65, 0.77, 0.97), 1, 0.0));
 	spheres.push_back(Sphere(Point3f(-5.5, 0, -15), 3, Point3f(0.90, 0.90, 0.90), 1, 0.0));*/
 	// light
 	//spheres.push_back(Sphere(Point3f(0.0, 20, 0.0), 3, Point3f(0.00, 0.00, 0.00), 0, 0.0, Point3f(4)));
-	
-	Point3f* image =TraceUtils::render(spheres,W,H);
-	TraceUtils::paintImage(image, W, H);
+
+	/*Point3f* image =TraceUtils::render(spheres,W,H);
+	TraceUtils::paintImage(image, W, H);*/
 
 	/*std::vector<Triangle> triangles;
 	triangles.emplace_back(Triangle(Point3f(0.0, 0.0, -20), Point3f(1.0, 0.0, -20), Point3f(0.0, 1.0, -20), Point3f(1.00, 0.32, 0.36), 0.8, 0.1, Point3f(0)));
 	Point3f* image =TraceUtils::render(triangles,W,H);
 	TraceUtils::paintImage(image, W, H);*/
+
+
+
+	/*Cone(const float &reflection,
+		const float &transparency, const Point3f &emissionColor)*/
+
+	std::vector<Cone> cones;
+
+	//Point3f(0.0, 0, -20), float(4), Point3f(0, 1, 0), float(3), Point3f(1.00, 0.32, 0.36), float(0.0), float(0.1), Point3f(0)
+	cones.emplace_back(Cone(Point3f(0.0, 0, -20), 2, Point3f(0,1,1), 4, Point3f(1.00, 0.32, 0.36), 0, 0.1, Point3f(0)));
+	//cones.emplace_back(Cone(Point3f(-5.0, 0, -17), 2, Point3f(0.5, 1, 0), 2.0, Point3f(0.00, 1.00, 0.36), 0, 0.1, Point3f(0)));
+
+
+	Point3f* image =TraceUtils::render(cones,W,H);
+	TraceUtils::paintImage(image, W, H);
+
+	//	Cone(const Point3f &referencePoint, const float &radius,Point3f& normal,float & height, const Point3f &surfaceColor, const float &reflection,
+	//const float &transparency, const Point3f &emissionColor)
+
+
 }
 
 
